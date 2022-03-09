@@ -2,20 +2,20 @@ import torch
 import torch.nn as nn
 
 class VGEncoder(nn.Module):
-    def __init__(self, latent_dim=128, input_size=(4, 1025, 862)):
+    def __init__(self, latent_dim=128, input_size=(4, 226, 226)):
         super().__init__()
 
         self.encoder = nn.Sequential(
             nn.Conv2d(4, 64, 5, padding='same'),
-            nn.MaxPool2d(5), #maxpool brings size down??!?!?!
+            nn.MaxPool2d(3), #maxpool brings size down??!?!?!
             nn.ReLU(),
             nn.BatchNorm2d(64),
             nn.Conv2d(64, 128, 5, padding='same'),
-            nn.MaxPool2d(5),
+            nn.MaxPool2d(3),
             nn.ReLU(),
             nn.BatchNorm2d(128),
             nn.Conv2d(128, 256, 5, padding='same'),
-            nn.MaxPool2d(5),
+            nn.MaxPool2d(3),
             nn.ReLU(),
             nn.BatchNorm2d(256),
         )
@@ -58,7 +58,7 @@ class VGEncoder(nn.Module):
         }
 
 class VGDecoder(nn.Module):
-    def __init__(self, latent_dim=128, linear_out=12288, reshape_size=(12,8)):
+    def __init__(self, latent_dim=128, linear_out=16384, reshape_size=(16,8)):
         super().__init__()
 
         self.reshape_size = reshape_size
@@ -86,15 +86,18 @@ class VGDecoder(nn.Module):
             nn.Tanh(),
             nn.MaxPool2d(6), #this is just a check
         )
+
+        self.changeSize = nn.AdaptiveAvgPool3d((4,226,226))
     
     def forward(self, x):
         x = self.fc(x)
         x = x.view(-1, 128, self.reshape_size[0], self.reshape_size[1])
         x = self.decoder(x)
+        x = self.changeSize(x)
         return x
 
 class VGDiscriminator(nn.Module):
-    def __init__(self, channel_in=3, recon_levl=3, latent_dim=128, input_size=(4, 1025, 862)):
+    def __init__(self, channel_in=3, recon_levl=3, latent_dim=128, input_size=(4, 226, 226)):
         super().__init__()
 
         self.size=channel_in
@@ -172,7 +175,7 @@ if __name__ == "__main__":
     #Test encoder
     encoder = VGEncoder()
     print(encoder) #what does this print?
-    x = torch.randn(1, 4, 1025, 862) #our previous dimensions were 64, 1, 5, 5
+    x = torch.randn(1, 4, 226, 226) #our previous dimensions were 64, 1, 5, 5
 
     x = encoder(x)
     print(x)
@@ -186,22 +189,22 @@ if __name__ == "__main__":
     print(x.shape) #torch.Size([1, 3, 1250, 833]) but needs to be [1, 4, 1025, 862]? What is the formula?
     # REECE!! Our output here needs to be same size as input. WHYYYYY DOESN'T IT WORKK!!!??
 
-    #Test Discriminator
-    discriminator = VGDiscriminator()
-    print(discriminator)
-    x = torch.randn(1, 4, 1025, 862)
+    # #Test Discriminator
+    # discriminator = VGDiscriminator()
+    # print(discriminator)
+    # x = torch.randn(1, 4, 64, 64)
 
-    x = discriminator(x, x, x)
-    print(x)
-    print(x.shape)
+    # x = discriminator(x, x, x)
+    # print(x)
+    # print(x.shape)
 
-    # #Test VAE_GAN
-    # Can't test until dimensions match
-    vae_gan = VAEGAN()
-    print(vae_gan)
-    x = torch.randn(1, 4, 1025, 862, dtype=torch.float32) #floats because that's how the spectrogram gets processed
-    x = vae_gan(x)
-    print(x)
+    # # #Test VAE_GAN
+    # # Can't test until dimensions match
+    # vae_gan = VAEGAN()
+    # print(vae_gan)
+    # x = torch.randn(1, 4, 1025, 862, dtype=torch.float32) #floats because that's how the spectrogram gets processed
+    # x = vae_gan(x)
+    # print(x)
     # print(x['discriminator_out'].shape) #I doubt this is right - I think I have dis in wrong place
 
     # #After the above works, try to convert to spectrogram, then .wav
