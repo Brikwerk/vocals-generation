@@ -1,5 +1,5 @@
-from dataset import StemsDataset
-from .src.vae_models import LitVAE
+from src.dataset import StemsDataset
+from src.vae_models import LitVAE
 
 import torch
 import torch.nn.functional as F
@@ -16,7 +16,7 @@ from matplotlib import pyplot as plt
 
 
 if __name__ == "__main__":
-    model_path = "FOLDER_PATH_TO_MODEL_GOES_HERE"
+    model_path = 'logs/VAE/version_1/checkpoints/epoch=9-step=19.ckpt'
 
     input_size = (1, 216, 216)
     # encoder_output_dim = 512 # Resnet18
@@ -46,10 +46,10 @@ if __name__ == "__main__":
     model = LitVAE.load_from_checkpoint(model_path, encoder=encoder, decoder=decoder)
 
     dataset = StemsDataset(
-        data_root='FOLDER_PATH_TO_DATA_GOES_HERE',
+        data_root='C:/Users/sweet/Documents/School 2019/UBCO/Grad School/COSC490/COSC490_Group_2_Term_Project/taylor_spec_data',
     )
 
-    dataset_index = 1369
+    dataset_index = 9 #1369
     spec = dataset.__getitem__(dataset_index)['accompaniment'].unsqueeze(0)
 
     with torch.no_grad():

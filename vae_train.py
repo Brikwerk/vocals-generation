@@ -27,7 +27,7 @@ if __name__ == "__main__":
     latent_dim = 1024
     batch_size = 6
     gpus = 1
-    epochs = 550
+    epochs = 10 #550
 
     # Ensure reproducibility
     torch.manual_seed(42)
@@ -59,7 +59,7 @@ if __name__ == "__main__":
 
     # Load the dataset
     dataset = StemsDataset(
-        data_root='FOLDER_PATH_TO_DATA_GOES_HERE',
+        data_root='C:/Users/sweet/Documents/School 2019/UBCO/Grad School/COSC490/COSC490_Group_2_Term_Project/taylor_spec_data',
     )
 
     # Split into train and test sets
@@ -73,13 +73,13 @@ if __name__ == "__main__":
         batch_size=batch_size,
         shuffle=True,
         num_workers=16,
-    )
+    ) #change num_workers to 8 (maybe 4)
     test_loader = DataLoader(
         test_dataset,
         batch_size=batch_size,
         shuffle=True,
         num_workers=16,
-    )
+    ) #change num_workers to 8 (maybe 4)
 
     vae = LitVAE(encoder, decoder,
         enc_output_dim=encoder_output_dim,
@@ -87,7 +87,7 @@ if __name__ == "__main__":
         input_size=input_size)
     tb_logger = pl_loggers.TensorBoardLogger("./logs/", "VAE")
     trainer = pl.Trainer(
-        gpus=gpus,
+        gpus=None,
         max_epochs=epochs,
-        logger=tb_logger)
-    trainer.fit(vae, train_loader)
+        logger=tb_logger) #gpus=gpus
+    trainer.fit(vae, train_loader) 
