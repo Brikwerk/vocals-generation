@@ -105,14 +105,14 @@ class VGDiscriminator(nn.Module):
     
         self.discriminator = nn.Sequential(
             nn.Conv2d(4, 32, 5, padding='same'), #How many channels in?
-            nn.MaxPool2d(5),
+            nn.MaxPool2d(3),
             nn.ReLU(),
             nn.Conv2d(32, 128, 5, padding='same'),
-            nn.MaxPool2d(5),
+            nn.MaxPool2d(3),
             nn.ReLU(),
             nn.BatchNorm2d(128), #is num_features the channels in?
             nn.Conv2d(128, 256, 5, padding='same'),
-            nn.MaxPool2d(5),
+            nn.MaxPool2d(3),
             nn.ReLU(),
             nn.BatchNorm2d(256), #is num_features the channels in?
             nn.Conv2d(256, 256, 5, padding='same'),
@@ -147,7 +147,7 @@ class VGDiscriminator(nn.Module):
         return x #other version returned the third layer result, the final result, and a result in between?
 
 class VAEGAN(nn.Module):
-    def __init__(self, latent_dim=128, input_size=(4,1025,862)):
+    def __init__(self, latent_dim=128, input_size=(4,226,226)):
         super().__init__()
 
         self.encoder = VGEncoder(latent_dim, input_size)
@@ -189,20 +189,20 @@ if __name__ == "__main__":
     print(x.shape) #torch.Size([1, 3, 1250, 833]) but needs to be [1, 4, 1025, 862]? What is the formula?
     # REECE!! Our output here needs to be same size as input. WHYYYYY DOESN'T IT WORKK!!!??
 
-    # #Test Discriminator
-    # discriminator = VGDiscriminator()
-    # print(discriminator)
-    # x = torch.randn(1, 4, 64, 64)
+    #Test Discriminator
+    discriminator = VGDiscriminator()
+    print(discriminator)
+    x = torch.randn(1, 4, 226, 226)
 
-    # x = discriminator(x, x, x)
-    # print(x)
-    # print(x.shape)
+    x = discriminator(x, x, x)
+    print(x)
+    print(x.shape)
 
     # # #Test VAE_GAN
     # # Can't test until dimensions match
     # vae_gan = VAEGAN()
     # print(vae_gan)
-    # x = torch.randn(1, 4, 1025, 862, dtype=torch.float32) #floats because that's how the spectrogram gets processed
+    # x = torch.randn(1, 4, 226, 226, dtype=torch.float32) #floats because that's how the spectrogram gets processed
     # x = vae_gan(x)
     # print(x)
     # print(x['discriminator_out'].shape) #I doubt this is right - I think I have dis in wrong place
