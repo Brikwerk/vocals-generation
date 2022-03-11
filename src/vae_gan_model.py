@@ -1,5 +1,6 @@
 import torch
 import torch.nn as nn
+from torch.autograd import Variable
 
 class VGEncoder(nn.Module):
     def __init__(self, latent_dim=128, input_size=(4, 226, 226)):
@@ -97,11 +98,8 @@ class VGDecoder(nn.Module):
         return x
 
 class VGDiscriminator(nn.Module):
-    def __init__(self, channel_in=3, recon_levl=3, latent_dim=128, input_size=(4, 226, 226)):
+    def __init__(self, latent_dim=128, input_size=(4, 226, 226)):
         super().__init__()
-
-        self.size=channel_in
-        self.recon_levl = recon_levl
     
         self.discriminator = nn.Sequential(
             nn.Conv2d(4, 32, 5, padding='same'), #How many channels in?
@@ -151,8 +149,10 @@ class VAEGAN(nn.Module):
         super().__init__()
 
         self.encoder = VGEncoder(latent_dim, input_size)
-        self.decoder = VGDecoder(latent_dim, self.encoder.linear_size, self.encoder.feature_size[2:])
+        self.decoder = VGDecoder(latent_dim) # , self.encoder.linear_size, self.encoder.feature_size[2:]
         self.discriminator = VGDiscriminator(latent_dim, input_size)
+
+        self.latent_dim = latent_dim
 
     #    need to send both decoder output and x into disc for gan
         # self.discriminator = VGDiscriminator(latent_dim, input_size)
@@ -160,8 +160,10 @@ class VAEGAN(nn.Module):
     def forward(self, x):
         encoder_out = self.encoder(x)
         decoder_out = self.decoder(encoder_out['z'])
+
         #randomly select here!! Once we know how!!
-        rand_sel = x
+        rand_sel = Variable(torch.randn(len(x), self.latent_dim), requires_grad=True)
+        rand_sel = self.decoder(rand_sel)
         discriminator_out = self.discriminator(x, decoder_out, rand_sel) #This seems wrong?
 
         return {
@@ -173,38 +175,38 @@ class VAEGAN(nn.Module):
 #to test
 if __name__ == "__main__":
     #Test encoder
-    encoder = VGEncoder()
-    print(encoder) #what does this print?
-    x = torch.randn(1, 4, 226, 226) #our previous dimensions were 64, 1, 5, 5
+    # encoder = VGEncoder()
+    # print(encoder) #what does this print?
+    # x = torch.randn(1, 4, 226, 226) #our previous dimensions were 64, 1, 5, 5
 
-    x = encoder(x)
-    print(x)
-    print(x['z'].shape) #torch.Size([1, 128])
+    # x = encoder(x)
+    # print(x)
+    # print(x['z'].shape) #torch.Size([1, 128])
 
-    #Test decoder
-    decoder = VGDecoder()
-    print(decoder)
-    x = torch.randn(1, 128) #batch size 1, 128 feature vectors
-    x = decoder(x)
-    print(x.shape) #torch.Size([1, 3, 1250, 833]) but needs to be [1, 4, 1025, 862]? What is the formula?
-    # REECE!! Our output here needs to be same size as input. WHYYYYY DOESN'T IT WORKK!!!??
+    # #Test decoder
+    # decoder = VGDecoder()
+    # print(decoder)
+    # x = torch.randn(1, 128) #batch size 1, 128 feature vectors
+    # x = decoder(x)
+    # print(x.shape) #torch.Size([1, 3, 1250, 833]) but needs to be [1, 4, 1025, 862]? What is the formula?
+    # # REECE!! Our output here needs to be same size as input. WHYYYYY DOESN'T IT WORKK!!!??
 
     #Test Discriminator
-    discriminator = VGDiscriminator()
-    print(discriminator)
-    x = torch.randn(1, 4, 226, 226)
+    # discriminator = VGDiscriminator()
+    # print(discriminator)
+    # x = torch.randn(1, 4, 226, 226)
 
-    x = discriminator(x, x, x)
-    print(x)
-    print(x.shape)
-
-    # # #Test VAE_GAN
-    # # Can't test until dimensions match
-    # vae_gan = VAEGAN()
-    # print(vae_gan)
-    # x = torch.randn(1, 4, 226, 226, dtype=torch.float32) #floats because that's how the spectrogram gets processed
-    # x = vae_gan(x)
+    # x = discriminator(x, x, x)
     # print(x)
-    # print(x['discriminator_out'].shape) #I doubt this is right - I think I have dis in wrong place
+    # print(x.shape)
 
-    # #After the above works, try to convert to spectrogram, then .wav
+    # Test VAE_GAN
+    # Can't test until dimensions match
+    vae_gan = VAEGAN()
+    print(vae_gan)
+    x = torch.randn(1, 4, 226, 226, dtype=torch.float32) #floats because that's how the spectrogram gets processed
+    x = vae_gan(x)
+    #print(x)
+    print(x['discriminator_out'].shape) #I doubt this is right - I think I have dis in wrong place
+
+    #After the above works, try to convert to spectrogram, then .wav
