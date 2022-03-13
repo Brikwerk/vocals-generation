@@ -3,11 +3,11 @@ import torch.nn as nn
 from torch.autograd import Variable
 
 class VGEncoder(nn.Module):
-    def __init__(self, latent_dim=128, input_size=(4, 216, 216)):
+    def __init__(self, latent_dim=128, input_size=(1, 216, 216)):
         super().__init__()
 
         self.encoder = nn.Sequential(
-            nn.Conv2d(4, 64, 5, padding='same'),
+            nn.Conv2d(1, 64, 5, padding='same'),
             nn.MaxPool2d(3), #maxpool brings size down??!?!?!
             nn.ReLU(),
             nn.BatchNorm2d(64),
@@ -59,7 +59,7 @@ class VGEncoder(nn.Module):
         }
 
 class VGDecoder(nn.Module):
-    def __init__(self, latent_dim=128, linear_out=16384, reshape_size=(16,8)):
+    def __init__(self, latent_dim=128, linear_out=2048, reshape_size=(8,2)):
         super().__init__()
 
         self.reshape_size = reshape_size
@@ -88,7 +88,7 @@ class VGDecoder(nn.Module):
             nn.MaxPool2d(6), #this is just a check
         )
 
-        self.changeSize = nn.AdaptiveAvgPool3d((4,226,226))
+        self.changeSize = nn.AdaptiveAvgPool3d((1,216,216))
     
     def forward(self, x):
         x = self.fc(x)
@@ -98,11 +98,11 @@ class VGDecoder(nn.Module):
         return x
 
 class VGDiscriminator(nn.Module):
-    def __init__(self, latent_dim=128, input_size=(4, 216, 216)):
+    def __init__(self, latent_dim=128, input_size=(1, 216, 216)):
         super().__init__()
     
         self.discriminator = nn.Sequential(
-            nn.Conv2d(4, 32, 5, padding='same'), #How many channels in?
+            nn.Conv2d(1, 32, 5, padding='same'), #How many channels in?
             nn.MaxPool2d(3),
             nn.ReLU(),
             nn.Conv2d(32, 128, 5, padding='same'),
@@ -145,7 +145,7 @@ class VGDiscriminator(nn.Module):
         return x #other version returned the third layer result, the final result, and a result in between?
 
 class VAEGAN(nn.Module):
-    def __init__(self, latent_dim=128, input_size=(4,226,226)):
+    def __init__(self, latent_dim=128, input_size=(1,226,226)):
         super().__init__()
 
         self.encoder = VGEncoder(latent_dim, input_size)
@@ -245,7 +245,7 @@ if __name__ == "__main__":
     # Can't test until dimensions match
     vae_gan = VAEGAN()
     print(vae_gan)
-    x = torch.randn(1, 4, 216, 216, dtype=torch.float32) #floats because that's how the spectrogram gets processed
+    x = torch.randn(1, 1, 216, 216, dtype=torch.float32) #floats because that's how the spectrogram gets processed
     x = vae_gan(x)
     #print(x)
     print(x['discriminator_out'].shape) #I doubt this is right - I think I have dis in wrong place
