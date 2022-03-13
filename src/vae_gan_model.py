@@ -3,7 +3,7 @@ import torch.nn as nn
 from torch.autograd import Variable
 
 class VGEncoder(nn.Module):
-    def __init__(self, latent_dim=128, input_size=(4, 226, 226)):
+    def __init__(self, latent_dim=128, input_size=(4, 216, 216)):
         super().__init__()
 
         self.encoder = nn.Sequential(
@@ -98,7 +98,7 @@ class VGDecoder(nn.Module):
         return x
 
 class VGDiscriminator(nn.Module):
-    def __init__(self, latent_dim=128, input_size=(4, 226, 226)):
+    def __init__(self, latent_dim=128, input_size=(4, 216, 216)):
         super().__init__()
     
         self.discriminator = nn.Sequential(
@@ -218,7 +218,7 @@ if __name__ == "__main__":
     #Test encoder
     # encoder = VGEncoder()
     # print(encoder) #what does this print?
-    # x = torch.randn(1, 4, 226, 226) #our previous dimensions were 64, 1, 5, 5
+    # x = torch.randn(1, 4, 216, 216) #our previous dimensions were 64, 1, 5, 5
 
     # x = encoder(x)
     # print(x)
@@ -235,7 +235,7 @@ if __name__ == "__main__":
     #Test Discriminator
     # discriminator = VGDiscriminator()
     # print(discriminator)
-    # x = torch.randn(1, 4, 226, 226)
+    # x = torch.randn(1, 4, 216, 216)
 
     # x = discriminator(x, x, x)
     # print(x)
@@ -245,7 +245,7 @@ if __name__ == "__main__":
     # Can't test until dimensions match
     vae_gan = VAEGAN()
     print(vae_gan)
-    x = torch.randn(1, 4, 226, 226, dtype=torch.float32) #floats because that's how the spectrogram gets processed
+    x = torch.randn(1, 4, 216, 216, dtype=torch.float32) #floats because that's how the spectrogram gets processed
     x = vae_gan(x)
     #print(x)
     print(x['discriminator_out'].shape) #I doubt this is right - I think I have dis in wrong place

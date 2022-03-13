@@ -46,7 +46,7 @@ class StemsDataset(Dataset):
 
 if __name__ == "__main__":
     spec_dataset = StemsDataset(
-        data_root='C:/Users/sweet/Documents/School 2019/UBCO/Grad School/COSC490/COSC490_Group_2_Term_Project/taylor_spec_data') #FOLDER_PATH_TO_DATA_GOES_HERE
+        data_root=FOLDER_PATH_TO_DATA_GOES_HERE) #FOLDER_PATH_TO_DATA_GOES_HERE
     print(len(spec_dataset))
 
     specs = spec_dataset.__getitem__(10)
