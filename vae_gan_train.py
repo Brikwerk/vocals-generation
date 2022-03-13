@@ -72,7 +72,9 @@ if __name__ == "__main__":
     # instantiate model
     model = VAEGAN(latent_dim = latent_dim, 
         input_size=input_size)
-    model.to(device)
+    device = 'cpu'      #not sure why doing this works
+    model = model.to(device)
+
 
     # tb_logger = pl_loggers.TensorBoardLogger("./logs/", "VAE")
 
@@ -95,5 +97,7 @@ if __name__ == "__main__":
             encoder_out = output['encoder_out']
 
             loss = model.loss(encoder_out, dis_out)
-            loss.backward()
+            loss['l_total'].backward()
             optimizer.step()
+
+    print('training...!')
