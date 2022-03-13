@@ -154,11 +154,52 @@ class VAEGAN(nn.Module):
 
         self.latent_dim = latent_dim
 
+
+    # loss function
+    # maybe pass everything individually
+    # calc overall loss and return all 4 
+    # originally def loss(self, original_input, encoder_out, decoder_out, disc_out, rand_choice)
+    def loss(self, encoder_out, disc_out):
+
+        # discriminator output is disc(original_input, dec_output, rand_choice)
+        # dec_out = gen_out
+        dis_x = disc_out[2]     # disc(rand_choice); sampled from gaussian
+        dis_gen_x = disc_out[1] # disc(dec_output); reconstructed
+        dis_orig = disc_out[0]  # disc(original_input)
+
+        logvar = encoder_out['logvar']
+        mu = encoder_out['mu']
+
+        # L_{prior} = Kullback-Leibler divergence
+        # assumes that p, q are normal distributions
+        l_prior = torch.mean(-0.5 * torch.sum(1 + logvar - mu **2 - logvar.exp(), dim = 1), dim = 0)
+
+        # L_{GAN}
+        l_gan = torch.log(dis_x) + torch.log(1-dis_gen_x)
+
+        # L_{llike}^{Dis_l}
+        # similar to the VAE reconstruction term 
+        # THIS IS PROBABLY WRONG (need the layer-wise output?)
+        l_dislay = -torch.log(dis_x) - torch.log(dis_gen_x) - torch.log(dis_orig)
+
+        # total loss
+        l_total = l_prior + l_gan + l_dislay
+
+        return {
+            'l_prior': l_prior,
+            'l_gan': l_gan,
+            'l_dislay': l_dislay,
+            'l_total': l_total
+            }
+
     #    need to send both decoder output and x into disc for gan
         # self.discriminator = VGDiscriminator(latent_dim, input_size)
+
+    
     
     def forward(self, x):
-        encoder_out = self.encoder(x)
+        
+        encoder_out  = self.encoder(x)
         decoder_out = self.decoder(encoder_out['z'])
 
         #randomly select here!! Once we know how!!
@@ -208,5 +249,7 @@ if __name__ == "__main__":
     x = vae_gan(x)
     #print(x)
     print(x['discriminator_out'].shape) #I doubt this is right - I think I have dis in wrong place
+    lo = vae_gan.loss(x['encoder_out'], x['discriminator_out'])
+    print(lo['l_total'])
 
     #After the above works, try to convert to spectrogram, then .wav
