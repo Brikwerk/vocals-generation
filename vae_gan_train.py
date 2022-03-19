@@ -1,17 +1,23 @@
-from asyncio.log import logger
-#import random
-
+# Train VAE only 
+from src.losses import kl_divergence, gaussian_likelihood 
 from src.dataset import StemsDataset
-from src.vae_gan_model import VAEGAN
+from src.vae_gan_model import VAE
 
 import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader, random_split
+import os
 
 # for transformations
 from torchvision import transforms as T
 
 import numpy as np
+
+def gauss_likelihood(x_decoded, logscale, x):
+        return gaussian_likelihood(x_decoded, logscale, x)
+
+def kl_div(z, mu, std):
+    return kl_divergence(z, mu, std)
 
 
 if __name__ == "__main__":
@@ -20,9 +26,12 @@ if __name__ == "__main__":
     latent_dim = 128
     batch_size = 4
     gpus = 1
-    epochs = 2 # originally 550
+    epochs = 1 # originally 550
 
     spec_type = 'accompaniment'
+
+    out_folder = r"C:\Users\anime\Documents\UBCO\W2021_T2\COSC 490\Project\model"
+    out_path = os.path.join(out_folder, "vae.pth")
 
     # Ensure reproducibility
     torch.manual_seed(42)
@@ -37,7 +46,7 @@ if __name__ == "__main__":
     # Load the dataset
     # Don't apply data augmentation transformations to validation and testing datasets
     dataset = StemsDataset(
-        data_root=FOLDER_PATH_TO_DATA_GOES_HERE,
+        data_root="INSERT PATH",
         
     )
     # add transform=transform later. Does not work right now since not defined in dataset.py
@@ -70,19 +79,16 @@ if __name__ == "__main__":
     device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 
     # instantiate model
-    model = VAEGAN(latent_dim = latent_dim, 
+    model = VAE(latent_dim = latent_dim, 
         input_size=input_size)
     device = 'cpu'      #not sure why doing this works
     model = model.to(device)
 
-
-    # tb_logger = pl_loggers.TensorBoardLogger("./logs/", "VAE")
-
     # Initialize optimizer 
-    optimizer = torch.optim.Adam(model.parameters(), lr=1e-3)
+    optimizer = torch.optim.Adam(model.parameters(), lr=1e-5)
 
-    # Initialise loss function? (already set in VAEGAN)
-    #vaegan_loss = model.loss()
+    # for loss function
+    logscale = nn.Parameter(torch.Tensor([0.0]))
 
     # training loop
     for epoch in range(epochs):
@@ -90,14 +96,25 @@ if __name__ == "__main__":
             # Zero out the optimizer
             optimizer.zero_grad()
 
+            x = batch[spec_type]
             output = model(batch[spec_type])
 
-            dis_out = output['discriminator_out']
-            decoder_out = output['decoder_out']
-            encoder_out = output['encoder_out']
+            decoded_x = output['decoder_out']
+            z = output['encoder_out']['z']
+            mu = output['encoder_out']['mu']
+            logvar = output['encoder_out']['logvar']
+            std = torch.exp(logvar / 2)
 
-            loss = model.loss(encoder_out, dis_out)
-            loss['l_total'].backward()
+            recon_loss = gauss_likelihood(decoded_x, logscale, x)
+
+            kl_loss = kl_div(z, mu, std)
+
+            loss = kl_loss - recon_loss
+            loss = loss.mean()
+
+            loss.backward()
             optimizer.step()
 
-    print('training...!')
+    torch.save(model.state_dict(), out_path)
+
+  

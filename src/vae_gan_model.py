@@ -213,6 +213,22 @@ class VAEGAN(nn.Module):
             'encoder_out': encoder_out
         }
 
+class VAE(nn.Module):
+    def __init__(self, latent_dim=128, input_size=(1,226,226)):
+        super().__init__()
+
+        self.encoder = VGEncoder(latent_dim, input_size)
+        self.decoder = VGDecoder(latent_dim)
+
+    def forward(self, x):
+        encoder_out = self.encoder(x)
+        z = encoder_out['z']
+        decoder_out = self.decoder(z)
+        return {
+            'decoder_out': decoder_out,
+            'encoder_out': encoder_out
+        }
+
 #to test
 if __name__ == "__main__":
     #Test encoder
@@ -243,13 +259,22 @@ if __name__ == "__main__":
 
     # Test VAE_GAN
     # Can't test until dimensions match
-    vae_gan = VAEGAN()
-    print(vae_gan)
-    x = torch.randn(1, 1, 216, 216, dtype=torch.float32) #floats because that's how the spectrogram gets processed
-    x = vae_gan(x)
-    #print(x)
-    print(x['discriminator_out'].shape) #I doubt this is right - I think I have dis in wrong place
-    lo = vae_gan.loss(x['encoder_out'], x['discriminator_out'])
-    print(lo['l_total'])
+    # vae_gan = VAEGAN()
+    # print(vae_gan)
+    # x = torch.randn(1, 1, 216, 216, dtype=torch.float32) #floats because that's how the spectrogram gets processed
+    # x = vae_gan(x)
+    # #print(x)
+    # print(x['discriminator_out'].shape) #I doubt this is right - I think I have dis in wrong place
+    # lo = vae_gan.loss(x['encoder_out'], x['discriminator_out'])
+    # print(lo['l_total'])
+
+    # Test VAE
+    vae = VAE()
+    #print(vae)
+    x = torch.randn(1, 1, 216, 216, dtype=torch.float32)
+    x = vae(x)
+    print(x['decoder_out'].shape) # torch.Size([1, 1, 216, 216])
 
     #After the above works, try to convert to spectrogram, then .wav
+
+    
