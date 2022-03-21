@@ -26,12 +26,12 @@ if __name__ == "__main__":
     latent_dim = 128
     batch_size = 4
     gpus = 1
-    epochs = 1 # originally 550
+    epochs = 10 # originally 550
 
     spec_type = 'accompaniment'
 
-    out_folder = r"C:\Users\anime\Documents\UBCO\W2021_T2\COSC 490\Project\model"
-    out_path = os.path.join(out_folder, "vae.pth")
+    out_folder = "/content/vocals-generation/model"
+    out_path = os.path.join(out_folder, "vae2.pth")
 
     # Ensure reproducibility
     torch.manual_seed(42)
@@ -46,7 +46,7 @@ if __name__ == "__main__":
     # Load the dataset
     # Don't apply data augmentation transformations to validation and testing datasets
     dataset = StemsDataset(
-        data_root=r"C:\Users\anime\Documents\490_Project_Files\Duplicates\testGenDataset",
+        data_root="/content/vocals-generation/data",
         
     )
     # add transform=transform later. Does not work right now since not defined in dataset.py
@@ -81,7 +81,7 @@ if __name__ == "__main__":
     # instantiate model
     model = VAE(latent_dim = latent_dim, 
         input_size=input_size)
-    device = 'cpu'      #not sure why doing this works
+    #device = 'cpu'      #not sure why doing this works
     model = model.to(device)
 
     # Initialize optimizer 
@@ -97,7 +97,8 @@ if __name__ == "__main__":
             optimizer.zero_grad()
 
             x = batch[spec_type]
-            output = model(batch[spec_type])
+            x = x.to(device)
+            output = model(x)
 
             decoded_x = output['decoder_out']
             z = output['encoder_out']['z']
