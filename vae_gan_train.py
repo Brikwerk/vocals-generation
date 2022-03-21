@@ -46,7 +46,7 @@ if __name__ == "__main__":
     # Load the dataset
     # Don't apply data augmentation transformations to validation and testing datasets
     dataset = StemsDataset(
-        data_root="INSERT PATH",
+        data_root=r"C:\Users\anime\Documents\490_Project_Files\Duplicates\testGenDataset",
         
     )
     # add transform=transform later. Does not work right now since not defined in dataset.py
