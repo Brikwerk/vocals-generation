@@ -134,15 +134,24 @@ class VGDiscriminator(nn.Module):
             nn.Sigmoid(),
         )
 
+        # self.aux = self.fc but change dimensions
+
     def forward(self, original_input, dec_output, rand_choice):
         #concatenate input together
         x = torch.cat((original_input, dec_output, rand_choice), 0)
 
         x = self.discriminator(x)
         x = self.flatten(x)
+        layerl = x
+        #aux  = self.fc(x) # aux runs fully-connected a second time with different dimensions             
         x = self.fc(x) # fc means fully connected
+        
 
-        return x #other version returned the third layer result, the final result, and a result in between?
+        return {
+            'layerl': layerl,
+            #'aux': aux,
+            'x': x
+        }
 
 class VAEGAN(nn.Module):
     def __init__(self, latent_dim=128, input_size=(1,226,226)):
@@ -163,9 +172,9 @@ class VAEGAN(nn.Module):
 
         # discriminator output is disc(original_input, dec_output, rand_choice)
         # dec_out = gen_out
-        dis_x = disc_out[2]     # disc(rand_choice); sampled from gaussian
-        dis_gen_x = disc_out[1] # disc(dec_output); reconstructed
-        dis_orig = disc_out[0]  # disc(original_input)
+        dis_x = disc_out['x'][2]     # disc(rand_choice); sampled from gaussian
+        dis_gen_x = disc_out['x'][1] # disc(dec_output); reconstructed
+        dis_orig = disc_out['x'][0]  # disc(original_input)
 
         logvar = encoder_out['logvar']
         mu = encoder_out['mu']
@@ -248,7 +257,7 @@ if __name__ == "__main__":
     x = torch.randn(1, 1, 216, 216, dtype=torch.float32) #floats because that's how the spectrogram gets processed
     x = vae_gan(x)
     #print(x)
-    print(x['discriminator_out'].shape) #I doubt this is right - I think I have dis in wrong place
+    print(x['discriminator_out']['x'].shape) #I doubt this is right - I think I have dis in wrong place
     lo = vae_gan.loss(x['encoder_out'], x['discriminator_out'])
     print(lo['l_total'])
 
