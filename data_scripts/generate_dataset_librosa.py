@@ -49,6 +49,10 @@ if __name__ == "__main__":
             vocals_spec = librosa.power_to_db(vocals_spec)
             accom_spec = librosa.power_to_db(accom_spec)
 
+            # Skip segment if the vocals are silent
+            if vocals_spec.max() < 27:
+                continue
+
             # Normalize spectrograms
             vocals_spec = (vocals_spec / 80) + 1
             accom_spec = (accom_spec / 80) + 1
