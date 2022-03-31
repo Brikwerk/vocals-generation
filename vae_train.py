@@ -22,12 +22,12 @@ import numpy as np
 if __name__ == "__main__":
     # Config
     input_size = (1, 216, 216)
-    # encoder_output_dim = 512 # Resnet18
-    encoder_output_dim = 2048 # Resnet50
+    encoder_output_dim = 512 # Resnet18
+    # encoder_output_dim = 2048 # Resnet50
     latent_dim = 1024
-    batch_size = 6
+    batch_size = 3
     gpus = 1
-    epochs = 550
+    epochs = 300
 
     # Ensure reproducibility
     torch.manual_seed(42)
@@ -36,21 +36,21 @@ if __name__ == "__main__":
 
     # Create an amend encoder and decoder
     # for processing spectrograms.
-    encoder = resnet50_encoder(False, False)
+    encoder = resnet18_encoder(False, False)
     encoder.conv1 = nn.Conv2d(input_size[0], 64,
         kernel_size=(3, 3),
         stride=(1, 1),
         padding=(1, 1),
         bias=False
     )
-    decoder = resnet50_decoder(
+    decoder = resnet18_decoder(
         latent_dim=latent_dim,
         input_height = input_size[1],
         first_conv=False,
         maxpool1=False
     )
-    # decoder.conv1 = nn.Conv2d(64, input_size[0],  # ResNet18
-    decoder.conv1 = nn.Conv2d(256, input_size[0],  # ResNet50
+    decoder.conv1 = nn.Conv2d(64, input_size[0],  # ResNet18
+    # decoder.conv1 = nn.Conv2d(256, input_size[0],  # ResNet50
         kernel_size=(3, 3),
         stride=(1, 1), 
         padding=(1, 1), 
@@ -59,7 +59,7 @@ if __name__ == "__main__":
 
     # Load the dataset
     dataset = StemsDataset(
-        data_root='FOLDER_PATH_TO_DATA_GOES_HERE',
+        data_root= r'C:\Users\kafkacat\Desktop\EltonOut',
     )
 
     # Split into train and test sets
@@ -72,13 +72,13 @@ if __name__ == "__main__":
         train_dataset,
         batch_size=batch_size,
         shuffle=True,
-        num_workers=16,
+        num_workers=12,
     )
     test_loader = DataLoader(
         test_dataset,
         batch_size=batch_size,
         shuffle=True,
-        num_workers=16,
+        num_workers=12,
     )
 
     vae = LitVAE(encoder, decoder,
@@ -89,5 +89,6 @@ if __name__ == "__main__":
     trainer = pl.Trainer(
         gpus=gpus,
         max_epochs=epochs,
-        logger=tb_logger)
+        logger=tb_logger,
+        resume_from_checkpoint = r"C:\Users\kafkacat\Desktop\vocals-generation\logs\VAE\version_12\checkpoints\epoch=298-step=275858.ckpt")
     trainer.fit(vae, train_loader)

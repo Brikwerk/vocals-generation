@@ -5,14 +5,14 @@ from src.losses import kl_divergence, gaussian_likelihood
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-import torchaudio
+#import torchaudio
 import pytorch_lightning as pl
 from matplotlib import pyplot as plt
 
 
 class LitVAE(pl.LightningModule):
     def __init__(self, encoder, decoder, spec_type='accompaniment',
-                 enc_output_dim=2048, latent_dim=1024,
+                 enc_output_dim=512, latent_dim=1024,       #ENC OUPUT DIM WAS 2048
                  input_size=(4, 284, 283), outputs_dir="./outputs"):
         super().__init__()
 
@@ -66,19 +66,22 @@ class LitVAE(pl.LightningModule):
         decoded_x = self.decoder(z)
         # decoded_x = self.pool_resize(decoded_x)
 
-        if batch_idx % 100 == 0:
+        if batch_idx % 300 == 0:
             # save_spec_tensor(decoded_x[0], 'output.wav')
-
-            # Plot original and reconstructed spectrograms
-            fig = plt.figure(figsize=(10, 15), dpi=300)
-            ax = fig.add_subplot(211)
-            ax.imshow(x[0].cpu().permute(1,2,0).detach().numpy(), aspect='auto', origin='lower')
-            ax.set_title('Original')
-            ax2 = fig.add_subplot(212)
-            ax2.imshow(decoded_x[0].cpu().permute(1,2,0).detach().numpy(), aspect='auto', origin='lower')
-            ax2.set_title('Reconstructed')
-            plt.savefig(join(self.outputs_dir, 'output.png'))
-            plt.close()
+            
+            try:
+                # Plot original and reconstructed spectrograms
+                fig = plt.figure(figsize=(10, 15), dpi=300)
+                ax = fig.add_subplot(211)
+                ax.imshow(x[0].cpu().permute(1,2,0).detach().numpy(), aspect='auto', origin='lower')
+                ax.set_title('Original')
+                ax2 = fig.add_subplot(212)
+                ax2.imshow(decoded_x[0].cpu().permute(1,2,0).detach().numpy(), aspect='auto', origin='lower')
+                ax2.set_title('Reconstructed')
+                plt.savefig(join(self.outputs_dir, 'output.png'))
+                plt.close()
+            except MemoryError:
+                pass
 
 
         recon_loss = self.gauss_likelihood(decoded_x, self.logscale, x)
@@ -245,7 +248,7 @@ if __name__ == "__main__":
     print(spec.shape)
 
     # Save random decoded waveform
-    ispec_transform = torchaudio.transforms.InverseSpectrogram(n_fft=2048)
-    waveform = ispec_transform(spec, 20 * 44100)
-    torchaudio.save('test.wav', waveform, 44100)
+    # ispec_transform = torchaudio.transforms.InverseSpectrogram(n_fft=2048)
+    # waveform = ispec_transform(spec, 20 * 44100)
+    # torchaudio.save('test.wav', waveform, 44100)
     

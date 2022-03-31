@@ -1,5 +1,5 @@
-from dataset import StemsDataset
-from .src.vae_models import LitVAE
+from src.dataset import StemsDataset
+from src.vae_models import LitVAE
 
 import torch
 import torch.nn.functional as F
@@ -16,27 +16,27 @@ from matplotlib import pyplot as plt
 
 
 if __name__ == "__main__":
-    model_path = "FOLDER_PATH_TO_MODEL_GOES_HERE"
+    model_path = r"C:\Users\kafkacat\Desktop\vocals-generation\logs\VAE\version_13\checkpoints\epoch=299-step=277060.ckpt"
 
     input_size = (1, 216, 216)
-    # encoder_output_dim = 512 # Resnet18
-    encoder_output_dim = 2048 # Resnet50
+    encoder_output_dim = 512 # Resnet18
+    #encoder_output_dim = 2048 # Resnet50
     latent_dim = 1024
-    encoder = resnet50_encoder(False, False)
+    encoder = resnet18_encoder(False, False)
     encoder.conv1 = nn.Conv2d(input_size[0], 64,
         kernel_size=(3, 3),
         stride=(1, 1),
         padding=(1, 1),
         bias=False
     )
-    decoder = resnet50_decoder(
+    decoder = resnet18_decoder(
         latent_dim=latent_dim,
         input_height = input_size[1],
         first_conv=False,
         maxpool1=False
     )
-    # decoder.conv1 = nn.Conv2d(64, input_size[0],  # ResNet18
-    decoder.conv1 = nn.Conv2d(256, input_size[0],  # ResNet50
+    decoder.conv1 = nn.Conv2d(64, input_size[0],  # ResNet18
+    #decoder.conv1 = nn.Conv2d(256, input_size[0],  # ResNet50
         kernel_size=(3, 3),
         stride=(1, 1), 
         padding=(1, 1), 
@@ -46,7 +46,7 @@ if __name__ == "__main__":
     model = LitVAE.load_from_checkpoint(model_path, encoder=encoder, decoder=decoder)
 
     dataset = StemsDataset(
-        data_root='FOLDER_PATH_TO_DATA_GOES_HERE',
+        data_root=r'C:\Users\kafkacat\Desktop\EltonOut',
     )
 
     dataset_index = 1369
@@ -54,6 +54,7 @@ if __name__ == "__main__":
 
     with torch.no_grad():
         output = model(spec).squeeze(0)
+        output2 = model(spec).squeeze(0)
 
     # Plot original and reconstructed spectrograms
     fig = plt.figure(figsize=(10, 15), dpi=300)
@@ -81,3 +82,23 @@ if __name__ == "__main__":
 
     # Save audio
     sf.write('./outputs/orig_inf.wav', y, sr)
+
+
+    # GENERATED
+
+    output2 = spec.numpy().squeeze()
+
+    S_dB = (output2 - 1) * 80
+    sr = 22100
+    hop_length = 1024
+
+    # Convert S_dB back to power
+    S = librosa.db_to_power(S_dB)
+
+    # Convert mel-spectrogram to audio
+    y = librosa.feature.inverse.mel_to_audio(S, sr=sr,
+        hop_length=hop_length)
+
+    # Save audio
+    sf.write('./outputs/gen_inf.wav', y, sr)
+
