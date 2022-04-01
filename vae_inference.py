@@ -16,7 +16,7 @@ from matplotlib import pyplot as plt
 
 
 if __name__ == "__main__":
-    model_path = r"C:\Users\kafkacat\Desktop\vocals-generation\logs\VAE\version_13\checkpoints\epoch=299-step=277060.ckpt"
+    model_path = r"C:\Users\sweet\Documents\School 2019\UBCO\Grad School\COSC490\vocals-generation\logs\VAE\new_version\epoch=299-step=277060.ckpt"
 
     input_size = (1, 216, 216)
     encoder_output_dim = 512 # Resnet18
@@ -46,7 +46,7 @@ if __name__ == "__main__":
     model = LitVAE.load_from_checkpoint(model_path, encoder=encoder, decoder=decoder)
 
     dataset = StemsDataset(
-        data_root=r'C:\Users\kafkacat\Desktop\EltonOut',
+        data_root=r'C:\Users\sweet\Documents\School 2019\UBCO\Grad School\COSC490\EltonOut',
     )
 
     dataset_index = 1369
@@ -54,7 +54,7 @@ if __name__ == "__main__":
 
     with torch.no_grad():
         output = model(spec).squeeze(0)
-        output2 = model(spec).squeeze(0)
+        # output2 = model(spec).squeeze(0)
 
     # Plot original and reconstructed spectrograms
     fig = plt.figure(figsize=(10, 15), dpi=300)
@@ -86,7 +86,8 @@ if __name__ == "__main__":
 
     # GENERATED
 
-    output2 = spec.numpy().squeeze()
+    # output2 = output2.numpy().squeeze()
+    output2 = model(spec).detach().numpy().squeeze() #tried pulling this down here instead of with torch.no_grad() b/c of error
 
     S_dB = (output2 - 1) * 80
     sr = 22100
