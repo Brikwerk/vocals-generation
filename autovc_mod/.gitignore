@@ -1,0 +1,10 @@
+wavenet_vocoder/
+test_specs/
+spmel/
+3000000-BL.ckpt
+__pycache__/
+*.pth
+/*.csv
+/*.png
+/runs
+/*.pkl
