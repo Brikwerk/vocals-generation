@@ -41,7 +41,7 @@ class VGEncoder(nn.Module):
     def reparameterize(self, mu, logvar):
         batch = mu.size(0)
         dim = mu.size(1)
-        epsilon = torch.randn(batch, dim)
+        epsilon = torch.randn(batch, dim, device=mu.device)
         return mu + torch.exp(logvar / 2) * epsilon
 
     def forward(self, x):

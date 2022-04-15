@@ -17,7 +17,7 @@ def gaussian_likelihood(x_hat, logscale, x):
     See the License for the specific language governing permissions and
     limitations under the License.
     """
-    scale = torch.exp(logscale)
+    scale = torch.exp(logscale).to(x.device)
     mean = x_hat
     dist = torch.distributions.Normal(mean, scale)
 
