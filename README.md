@@ -31,7 +31,7 @@ Future work: This is just a starting point. Now that the autoencoder approach ha
 ```
     .
     ├── autovc_mod                          # Modified AutoVC architecture
-    │   ├── accom_synthesis.ipynb           #
+    │   ├── accom_synthesis.ipynb           # 
     │   ├── autovc.md                       #
     │   ├── compile_dataset.py              #
     │   ├── conditioned_main.py             #
@@ -39,9 +39,9 @@ Future work: This is just a starting point. Now that the autoencoder approach ha
     │   ├── conversion.ipynb                #
     │   ├── data_loader.py                  #
     │   ├── hparams.py                      #
-    │   ├── LICENSE                         #
-    │   ├── losses.py                       #
-    │   ├── main.py                         #
+    │   ├── LICENSE                         # MIT License
+    │   ├── losses.py                       # Loss calculations for the VAE component
+    │   ├── main.py                         # 
     │   ├── make_metadata.py                #
     │   ├── make_spect.py                   #    
     │   ├── model_bl.py                     #
