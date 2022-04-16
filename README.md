@@ -31,28 +31,27 @@ Future work: This is just a starting point. Now that the autoencoder approach ha
 ```
     .
     ├── autovc_mod                          # Modified AutoVC architecture
-    │   ├── accom_synthesis.ipynb           # 
-    │   ├── autovc.md                       #
-    │   ├── compile_dataset.py              #
-    │   ├── conditioned_main.py             #
-    │   ├── conditioned_main_v3.py          #
-    │   ├── conversion.ipynb                #
-    │   ├── data_loader.py                  #
-    │   ├── hparams.py                      #
+    │   ├── accom_synthesis.ipynb           # Accompaniment synthesis notebook
+    │   ├── autovc.md                       # README for the original AutoVC code
+    │   ├── compile_dataset.py              # Compile dataset into .npy files
+    │   ├── conditioned_main.py             # Main script for conditional vocal generation
+    │   ├── conditioned_main_v3.py          # Main script for conditional vocal generation, v3 of the network
+    │   ├── conversion.ipynb                # Convert .npy to .wav with the model
+    │   ├── data_loader.py                  # Loads the dataset into a data loader
+    │   ├── hparams.py                      # Hyperparameters for the model
     │   ├── LICENSE                         # MIT License
     │   ├── losses.py                       # Loss calculations for the VAE component
-    │   ├── main.py                         # 
-    │   ├── make_metadata.py                #
-    │   ├── make_spect.py                   #    
-    │   ├── model_bl.py                     #
-    │   ├── model_vc.py                     #
-    │   ├── solver_encoder.py               #
-    │   ├── synthesis.py                    #
-    │   ├── test.wav                        #
-    │   ├── vocals_synthesis.ipynb          #
-    │   ├── vocals_synthesis_v2.ipynb       #
-    │   ├── vocals_synthesis_v3.ipynb       #
-    │   ├── vocoder.ipynb                   #
+    │   ├── main.py                         # Original AutoVC main script
+    │   ├── make_metadata.py                # Generate metadata for the dataset
+    │   ├── make_spect.py                   # Generate spectrograms for the dataset
+    │   ├── model_bl.py                     # Baseline model
+    │   ├── model_vc.py                     # Vocal conditioning model
+    │   ├── solver_encoder.py               # Solver for the VAE encoder
+    │   ├── synthesis.py                    # Synthesis script
+    │   ├── vocals_synthesis.ipynb          # Vocal synthesis notebook
+    │   ├── vocals_synthesis_v2.ipynb       # Vocal synthesis notebook, v2 of the network
+    │   ├── vocals_synthesis_v3.ipynb       # Vocal synthesis notebook, v3 of the network
+    │   ├── vocoder.ipynb                   # Original AutoVC vocoder synthesis
     ├── data_scripts                        # Test scripts for generating the dataset
     │   ├── example_load_store.py           # Testing generating/storing spectrograms 
     │   ├── generate_dataset_librosa.py     # Dataset generation using librosa
