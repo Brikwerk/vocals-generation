@@ -1,5 +1,5 @@
-from dataset import StemsDataset
-from .src.vae_models import LitVAE
+from src.dataset import StemsDataset
+from src.vae_models import LitVAE
 
 import torch
 import torch.nn.functional as F
