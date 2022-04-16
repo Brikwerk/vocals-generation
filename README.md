@@ -28,4 +28,21 @@ Future work: This is just a starting point. Now that the autoencoder approach ha
 
 ## Model Locations
 
---Insert Here--
+```
+    .
+    ├── autovc_mod                      # Modified AutoVC architecture
+    │   ├──                      # 
+    ├── data_scripts                    # Scripts for generating the dataset
+    │   ├──                         # 
+    ├── vae                             # VAE files
+    │   ├── outputs                     # Files created after running inference will be found here
+    │   ├── src                         # VAE source files
+    │   |    ├── dataset.py             # Loads the dataset as spectrograms in tensor form
+    │   |    ├── losses.py              # Loss calculations for the VAE
+    │   |    ├── utils.py               # For tensor to spectrogram conversion
+    │   |    ├── vae_models.py          # Contains two different VAE models: LitVAE and SpecVAE
+    │   ├── vae_inference.py            # Code for running inference using the VAE
+    │   ├── vae_train.py                # Trainer for the VAE
+    └── README.md                       # This file!
+```
+
