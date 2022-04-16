@@ -30,19 +30,22 @@ Future work: This is just a starting point. Now that the autoencoder approach ha
 
 ```
     .
-    ├── autovc_mod                      # Modified AutoVC architecture
-    │   ├──                      # 
-    ├── data_scripts                    # Scripts for generating the dataset
-    │   ├──                         # 
-    ├── vae                             # VAE files
-    │   ├── outputs                     # Files created after running inference will be found here
-    │   ├── src                         # VAE source files
-    │   |    ├── dataset.py             # Loads the dataset as spectrograms in tensor form
-    │   |    ├── losses.py              # Loss calculations for the VAE
-    │   |    ├── utils.py               # For tensor to spectrogram conversion
-    │   |    ├── vae_models.py          # Contains two different VAE models: LitVAE and SpecVAE
-    │   ├── vae_inference.py            # Code for running inference using the VAE
-    │   ├── vae_train.py                # Trainer for the VAE
-    └── README.md                       # This file!
+    ├── autovc_mod                          # Modified AutoVC architecture
+    │   ├──                                 # 
+    ├── data_scripts                        # Test scripts for generating the dataset
+    │   ├── example_load_store.py           # Testing generating/storing spectrograms 
+    │   ├── generate_dataset_librosa.py     # Dataset generation using librosa
+    │   ├── generate_dataset_torchaudio.py  # Dataset generation using torchaudio
+    │   ├── librosa_tests.py                # Testing the librosa package
+    ├── vae                                 # VAE files
+    │   ├── outputs                         # Files created after running inference will be found here
+    │   ├── src                             # VAE source files
+    │   |    ├── dataset.py                 # Loads the dataset as spectrograms in tensor form
+    │   |    ├── losses.py                  # Loss calculations for the VAE
+    │   |    ├── utils.py                   # For tensor to spectrogram conversion
+    │   |    ├── vae_models.py              # Contains two different VAE models: LitVAE and SpecVAE
+    │   ├── vae_inference.py                # Code for running inference using the VAE
+    │   ├── vae_train.py                    # Trainer for the VAE
+    └── README.md                           # This file!
 ```
 
