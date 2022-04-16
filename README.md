@@ -31,7 +31,28 @@ Future work: This is just a starting point. Now that the autoencoder approach ha
 ```
     .
     ├── autovc_mod                          # Modified AutoVC architecture
-    │   ├──                                 # 
+    │   ├── accom_synthesis.ipynb           #
+    │   ├── autovc.md                       #
+    │   ├── compile_dataset.py              #
+    │   ├── conditioned_main.py             #
+    │   ├── conditioned_main_v3.py          #
+    │   ├── conversion.ipynb                #
+    │   ├── data_loader.py                  #
+    │   ├── hparams.py                      #
+    │   ├── LICENSE                         #
+    │   ├── losses.py                       #
+    │   ├── main.py                         #
+    │   ├── make_metadata.py                #
+    │   ├── make_spect.py                   #    
+    │   ├── model_bl.py                     #
+    │   ├── model_vc.py                     #
+    │   ├── solver_encoder.py               #
+    │   ├── synthesis.py                    #
+    │   ├── test.wav                        #
+    │   ├── vocals_synthesis.ipynb          #
+    │   ├── vocals_synthesis_v2.ipynb       #
+    │   ├── vocals_synthesis_v3.ipynb       #
+    │   ├── vocoder.ipynb                   #
     ├── data_scripts                        # Test scripts for generating the dataset
     │   ├── example_load_store.py           # Testing generating/storing spectrograms 
     │   ├── generate_dataset_librosa.py     # Dataset generation using librosa
