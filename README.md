@@ -66,6 +66,6 @@ Future work: This is just a starting point. Now that the autoencoder approach ha
     │   |    ├── vae_models.py              # Contains two different VAE models: LitVAE and SpecVAE
     │   ├── vae_inference.py                # Code for running inference using the VAE
     │   ├── vae_train.py                    # Trainer for the VAE
+    |   Generation_of_vocals.pdf            # Final report for the project
     └── README.md                           # This file!
 ```
-
